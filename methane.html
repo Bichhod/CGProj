@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="description" content="CS4406 Computer Graphics - Assignment 5" />
+  	<meta charset="utf-8" />
+	<title>CS4406 Computer Graphics - Assignment 5</title>
+	<style>
+		#container {
+			background: #000;
+			width: 500px;
+			height: 500px;
+		}
+	</style>
+<meta charset=utf-8 />
+<title></title>
+<style id="jsbin-css">
+
+</style>
+</head>
+<body>
+<div id="container">
+</div>
+</body>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/r58/three.min.js"></script>
+    <script src="http://simpletruthsforhealthyliving.com/js/OrbitControls.js"></script>
+    <script type="text/javascript">
+
+    // set the scene size
+	var WIDTH = 500,
+	    HEIGHT = 500;
+
+	// set some camera attributes
+	var VIEW_ANGLE = 45,
+	    ASPECT = WIDTH / HEIGHT,
+	    NEAR = 1,
+	    FAR = 1000;
+
+	// get the DOM element to attach to
+	// - assume we've got jQuery to hand
+	var $container = $('#container');
+
+	// create a WebGL renderer, camera
+	// and a scene
+	var renderer = new THREE.WebGLRenderer();
+ 
+ 
+	var camera = new THREE.PerspectiveCamera(  VIEW_ANGLE,
+	                                ASPECT,
+	                                NEAR,
+	                                FAR  );                
+                                    
+	var scene = new THREE.Scene();
+    
+    var clock = new THREE.Clock();
+
+    // the camera starts at 0,0,0 so pull it back so we can see the whole object
+	camera.position.z = 300;    
+
+    // CONTROLS enables us to control the object with the mouse
+    var cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
+    cameraControls.addEventListener( 'mousemove', renderer );
+    //cameraControls.autoRotate = true;
+
+	// start the renderer
+	renderer.setSize(WIDTH, HEIGHT);
+
+	// attach the render-supplied DOM element
+	$container.append(renderer.domElement);
+      
+    //add a spotlight, set its source position and target position
+    
+	var light = new THREE.SpotLight();
+        light.position.set( 100, 70, 250 );
+        light.target.position.set( 0, 0, 0 );
+      //make the light cast a shadow
+        light.castShadow = true;
+		light.shadowCameraVisible = true;
+
+        scene.add( light );
+	
+	/*
+	var pointLight = new THREE.PointLight( 0xffffff);
+		pointLight.position.set( 0, 0, 200 );
+        //pointLight.target.position.set( 50, 50, 0 );
+		pointLight.castShadow = true;
+		pointLight.shadowCameraVisible = true;
+		// add to the scene
+		scene.add(pointLight);
+	*/
+	
+	
+	//create a plane and add it to the scene
+	var geometry = new THREE.PlaneGeometry( 200, 200, 32 ); 
+	var material = new THREE.MeshLambertMaterial( {color: 0xcccccc, side: THREE.DoubleSide} ); 
+	var plane = new THREE.Mesh( geometry, material ); 
+	plane.position.z = -100
+	plane.receiveShadow = true;
+	scene.add( plane );
+
+	// create the materials, Phong material for shiny reflective surface
+	//carbon is red, hydrogen is blue and bonds are white
+	var carbonMaterial = new THREE.MeshPhongMaterial({ color:0xff0000});
+	var hydrogenMaterial = new THREE.MeshPhongMaterial({ color:0x0000ff});
+	var bondMaterial = new THREE.MeshPhongMaterial( {color: 0xffffff} );
+
+	// set up the sphere vars, radius is for carbon and smallRadius is for hydrogen atoms
+	var radius = 25, smallRadius = 15, segments = 32, rings = 32;
+
+	// create a carbon atom mesh with sphere geometry
+	var carbon = new THREE.Mesh(
+	   new THREE.SphereGeometry(radius, segments, rings),
+	   carbonMaterial);
+        //make the sphere cast a shadow
+        carbon.castShadow = true;
+		carbon.receiveShadow = true;
+	// add the sphere to the scene
+	//scene.add(carbon);
+	
+	//**********************create a hydrogen atom with sphere geometry*****************//
+	//there are four such atoms in the secene
+	var hydrogen1 = new THREE.Mesh(
+	   new THREE.SphereGeometry(smallRadius, segments, rings),
+	   hydrogenMaterial);
+        //make the sphere cast a shadow
+        hydrogen1.castShadow = true;
+		hydrogen1.receiveShadow = true;
+		hydrogen1.position.y = 50;
+	// add the sphere to the scene
+	//scene.add(hydrogen1);
+	
+	var hydrogen2 = new THREE.Mesh(
+	   new THREE.SphereGeometry(smallRadius, segments, rings),
+	   hydrogenMaterial);
+        //make the sphere cast a shadow
+        hydrogen2.castShadow = true;
+		hydrogen2.receiveShadow = true;
+		hydrogen2.position.z= -50;
+	// add the sphere to the scene
+	//scene.add(hydrogen2);
+	
+	var hydrogen3 = new THREE.Mesh(
+	   new THREE.SphereGeometry(smallRadius, segments, rings),
+	   hydrogenMaterial);
+        //make the sphere cast a shadow
+        hydrogen3.castShadow = true;
+		hydrogen3.receiveShadow = true;
+		hydrogen3.position.x= 45;
+		hydrogen3.position.z= 20;
+	// add the sphere to the scene
+	//scene.add(hydrogen3);
+	
+	var hydrogen4 = new THREE.Mesh(
+	   new THREE.SphereGeometry(smallRadius, segments, rings),
+	   hydrogenMaterial);
+        //make the sphere cast a shadow
+        hydrogen4.castShadow = true;
+		hydrogen4.receiveShadow = true;
+		hydrogen4.position.x= -45;
+		hydrogen4.position.z= 20;
+	// add the sphere to the scene
+	//scene.add(hydrogen4);
+	//********all four hydrogen atoms done here*****************//
+	
+	//********draw the bonds here*****************//
+	var bond = new THREE.CylinderGeometry( 5, 5, 25, 32 );
+	
+	//first bond
+	var bond1 = new THREE.Mesh( bond, bondMaterial );
+	bond1.position.y = 30;
+	//scene.add( bond1 );
+	
+	//second bond
+	var bond2 = new THREE.Mesh( bond, bondMaterial );
+	bond2.position.z = -30;
+	bond2.rotation.x = 0.5*Math.PI; //angle for rotate it towards hydrogen atom 2
+	//scene.add( bond2 );
+	
+	//third bond
+	var bond3 = new THREE.Mesh( bond, bondMaterial );
+	bond3.position.x = 30;
+	bond3.position.z = 10;
+	//more complex angles here to give a bent look
+	bond3.rotation.z = 0.5*Math.PI;
+	bond3.rotation.y = -0.2*Math.PI;
+	//scene.add( bond3 );
+	
+	//fourth bond
+	var bond4 = new THREE.Mesh( bond, bondMaterial );
+	bond4.position.x = -30;
+	bond4.position.z = 10;
+	//more complex angles here to give a bent look
+	bond4.rotation.z = 0.5*Math.PI;
+	bond4.rotation.y = 0.2*Math.PI;
+	//scene.add( bond4 );
+	//********we have ended adding bonds here**********//
+	
+	//finally grouping all atoms and binds together in a methane molecule
+	methane = new THREE.Object3D();//create an empty container for methane
+	//add meshes with geometry to it
+	methane.add( carbon);
+	methane.add( hydrogen1 );
+	methane.add( hydrogen2 );
+	methane.add( hydrogen3 );
+	methane.add( hydrogen4 );
+	methane.add( bond1 );
+	methane.add( bond2 );
+	methane.add( bond3 );
+	methane.add( bond4 );
+	//when done, add methane to the scene
+	scene.add( methane );
+	
+	//add the mouseevent to control methane molecule only
+	
+	
+	// add the camera
+	scene.add(camera)
+    
+	// draw!
+    function animate() {
+        requestAnimationFrame(animate);
+	    render();
+    }
+
+    function render() {
+        cameraControls.update();
+	    renderer.render(scene, camera);
+    }
+    animate();
+	</script>
+</html>
